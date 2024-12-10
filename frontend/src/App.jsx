@@ -5,7 +5,7 @@ import Home from './pages/Home';
 import NoPage from './pages/NoPage';
 import SignUp from './pages/SignUp';
 import Login from './pages/Login';
-import Editor from './pages/Editor';
+import Editior from './pages/Editor'
 
 const App = () => {
   return (
@@ -15,7 +15,7 @@ const App = () => {
             <Route path='/' element={<Home />} />
             <Route path='/signUp' element={<SignUp />} />
             <Route path='/login' element={<Login />} />
-            <Route path='/editor/:projectId' element={<Editor />} />
+            <Route path='/editior/:projectId' element={<Editior />} />
             <Route path='*' element={<NoPage />} />
         </Routes>
       </BrowserRouter>

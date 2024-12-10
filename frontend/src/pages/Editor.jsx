@@ -1,21 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import EditorNavbar from '../components/EditorNavbar';
-import { default as MonacoEditor } from '@monaco-editor/react'; // Renamed to avoid conflict
+import { useParams } from 'react-router-dom';
+import EditiorNavbar from '../components/EditorNavbar';
+import Editor from '@monaco-editor/react'; // Renamed to avoid conflict
 import { MdLightMode } from "react-icons/md";
 import { AiOutlineExpandAlt } from "react-icons/ai";
+import { api_base_url } from '../helper';
 
-const Editor = () => {
+const Editior = () => {
+  let {projectId} = useParams()
+  
+
   const [tab, setTab] = useState("html")
   const [isLightMode, setIsLightMode] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
 
   const changeTheme = () => {
+    const editiornavbar = document.querySelector('.EditiorNavbar')
     if (isLightMode) {
-      document.querySelector('.EditorNavbar').style.background = "#141414";
+      editiornavbar.style.background = "#141414";
       document.body.classList.remove("lightMode");
       setIsLightMode(false);
     } else {
-      document.querySelector('.EditorNavbar').style.background = "#f4f4f4";
+      editiornavbar.style.background = "#f4f4f4";
       document.body.classList.add("lightMode");
       setIsLightMode(true);
     }
@@ -30,7 +36,9 @@ const Editor = () => {
     const css = `<style>${cssCode}</style>`
     const js = `<script>${jsCode}</script>`
     const iframe = document.getElementById("iframe")
-    iframe.srcdoc = html + css + js
+    if (iframe) {
+      iframe.srcdoc = html + css + js
+    }
   }
 
   useEffect(() => {
@@ -39,10 +47,28 @@ const Editor = () => {
     }, 200)
   }, [htmlCode, cssCode, jsCode])
 
+  useEffect(() => {
+    fetch(api_base_url + "/getProject", {
+      mode: "cors",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        userId: localStorage.getItem("userId"),
+        projId: projectId,
+      })
+    }).then(res => res.json()).then(data => {
+      setHtmlCode(data.project.htmlCode);
+      setCssCode(data.project.cssCode);
+      setJsCode(data.project.jsCode);
+    })
+  }, [projectId])
+  
 
   return (
     <>
-      <EditorNavbar />
+      <EditiorNavbar />
       <div className='flex'>
         <div className={`left ${isExpanded ? "w-full" : "w-1/2"}`}>
           <div className='tabs flex items-center justify-between gap-2 w-full bg-[#1A1919] h-[50px] px-[40px]'>
@@ -59,18 +85,18 @@ const Editor = () => {
           {
             tab == "html" ?
               <>
-                <MonacoEditor onChange={(e) => {
+                <Editor onChange={(e) => {
                   setHtmlCode(e)
                   run()
                 }} height="81vh" theme={isLightMode ? "vs-light" : "vs-dark"} language="html" value={htmlCode} />
               </> : tab == "css" ?
                 <>
-                  <MonacoEditor onChange={(e) => {
+                  <Editor onChange={(e) => {
                     setCssCode(e)
                     run()
                   }} r height="81vh" theme={isLightMode ? "vs-light" : "vs-dark"} language="css" value={cssCode} />
                 </> : <>
-                  <MonacoEditor onChange={(e) => {
+                  <Editor onChange={(e) => {
                     setJsCode(e)
                     run()
                   }} r height="81vh" theme={isLightMode ? "vs-light" : "vs-dark"} language="javascript" value={jsCode} />
@@ -83,4 +109,4 @@ const Editor = () => {
   );
 };
 
-export default Editor;
+export default Editior;
