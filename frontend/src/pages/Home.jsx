@@ -10,10 +10,15 @@ const Home = () => {
   const [isGridLayout, setisGridLayout] = useState(false);
   const [isCreateModelShow, setIsCreateModelShow] = useState(false)
   const [projTitle, setProjTitle] = useState("")
+  const [searchQuery, setSearchQuery] = useState('');
   const [data, setData] = useState(null)
   const [error, setError] = useState("")
 
   const navigate = useNavigate()
+
+  const filteredData = data ? data.filter(item =>
+    item.title.toLowerCase().includes(searchQuery.toLowerCase()) // Case insensitive filtering
+  ) : [];
 
   const createProj = (e) => {
     if (projTitle === "") {
@@ -63,18 +68,39 @@ const Home = () => {
 
   useEffect(() => {
     getProjects();
-    
   }, []);
+
+  const [userData, setUserData] = useState(null);
+  const [userError, setuserError] = useState("");
+  useEffect(() => {
+    fetch(api_base_url + "/getUserDetails", {
+      mode: "cors",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        userId: localStorage.getItem("userId")
+      })
+    }).then(res => res.json()).then(data => {
+      if (data.success) {
+        setUserData(data.user)
+      } else {
+        setuserError(data.message)
+      }
+    })
+  }, [])
+
 
 
   return (
     <>
-      <NavBar />
+      <NavBar isGridLayout={isGridLayout} setIsGridLayout={setisGridLayout} />
       <div className='flex items-center justify-between px-[100px] my-[40px]'>
-        <h2 className='text-2xl'>Hi, Aksh 👋</h2>
+        <h2 className='text-2xl'>Hi, {userData ? userData.username : ""} 👋</h2>
         <div className='flex items-center gap-1'>
           <div className="inputBox !w-[350px]">
-            <input type="text" placeholder='Search Here... ' />
+            <input type="text" placeholder='Search Here... ' value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
           </div>
           <button onClick={() => { setIsCreateModelShow(true) }} className='btnBlue rounded-[5px] mb-4 text-[20px] !p=[5px] !px-[10px]'>+</button>
         </div>
@@ -86,9 +112,9 @@ const Home = () => {
             <div className='grid px-[100px]'>
 
               {
-                data ? data.map((item, index) => {
-                  return <GridCard key={index} item={item} />
-                }) : ""
+                filteredData.length > 0 ? filteredData.map((item, index) => (
+                  <GridCard key={index} item={item} />
+                )) : <p>No projects found</p>
               }
 
               {/* <GridCard/>
@@ -101,11 +127,10 @@ const Home = () => {
             <div className='list px-[100px]'>
 
               {
-                data ? data.map((item, index) => {
-                  return <ListCard key={index} item={item} />
-                }) : ""
+                filteredData.length > 0 ? filteredData.map((item, index) => (
+                  <ListCard key={index} item={item} />
+                )) : <p>No projects found</p>
               }
-
               {/* <ListCard/>
               <ListCard/>
               <ListCard/>
