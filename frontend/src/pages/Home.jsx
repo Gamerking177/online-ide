@@ -113,7 +113,7 @@ const Home = () => {
 
               {
                 filteredData.length > 0 ? filteredData.map((item, index) => (
-                  <GridCard key={index} item={item} />
+                  <GridCard key={index} item={item} onClick={() => navigate(`/editior/${data.projectId}`)} />
                 )) : <p>No projects found</p>
               }
 
@@ -128,7 +128,7 @@ const Home = () => {
 
               {
                 filteredData.length > 0 ? filteredData.map((item, index) => (
-                  <ListCard key={index} item={item} />
+                  <ListCard key={index} item={item} onClick={() => navigate(`/editior/${data.projectId}`)} />
                 )) : <p>No projects found</p>
               }
               {/* <ListCard/>
