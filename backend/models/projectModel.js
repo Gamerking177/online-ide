@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
+require('dotenv').config();
 
-mongoose.connect('mongodb://127.0.0.1:27017/onlineIDE')
+mongoose.connect(process.env.MONGO_DB_URL)
 
 const projectSchema = new mongoose.Schema({
   title: String,
@@ -21,7 +22,7 @@ const projectSchema = new mongoose.Schema({
       <title>Document</title>
     </head>
     <body>
-    
+      <h1>Hello World</h1>
     </body>
     </html>`
   },
