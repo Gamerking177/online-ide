@@ -22,7 +22,7 @@ const projectSchema = new mongoose.Schema({
       <title>Document</title>
     </head>
     <body>
-    
+      <h1>Hello World</h1>
     </body>
     </html>`
   },
@@ -33,6 +33,10 @@ const projectSchema = new mongoose.Schema({
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+    }
+      
+    h1 {
+      color: red;
     }`
   },
   jsCode: {
